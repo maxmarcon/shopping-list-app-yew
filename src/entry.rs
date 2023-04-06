@@ -9,11 +9,11 @@ pub struct Props {
 #[function_component(Entry)]
 pub fn entry(Props { name, checked }: &Props) -> Html {
     html! {
-        <div>
+        <li>
         <span>{ name }</span>
         if *checked {
-            <div>{ "Ok" }</div>
+            <span>{ " Ok" }</span>
         }
-        </div>
+        </li>
     }
 }

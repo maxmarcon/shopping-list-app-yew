@@ -20,9 +20,9 @@ fn App() -> Html {
     .collect();
 
     html! {
-        <div>
+        <ul>
             { entries }
-        </div>
+        </ul>
     }
 }
 
