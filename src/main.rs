@@ -1,20 +1,27 @@
 use yew::prelude::*;
 
+mod entry;
+
+use crate::entry::Entry;
+
+struct Item(&'static str, bool);
+
 #[function_component]
 fn App() -> Html {
-    let counter = use_state(|| 0);
-    let onclick = {
-        let counter = counter.clone();
-        move |_| {
-            let value = *counter + 1;
-            counter.set(value);
-        }
-    };
+    let entries: Vec<Html> = [
+        Item("Cereals", false),
+        Item("Milk", true),
+        Item("Jam", true),
+        Item("Butter", false),
+        Item("Apples", false),
+    ]
+    .into_iter()
+    .map(|Item(name, checked)| html! { <Entry name={name} checked={checked} />})
+    .collect();
 
     html! {
         <div>
-            <button {onclick}>{ "+1" }</button>
-            <p>{ *counter }</p>
+            { entries }
         </div>
     }
 }
