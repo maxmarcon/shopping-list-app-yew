@@ -1,3 +1,10 @@
 ## Yew learning project
 
-it's a shopping list.
+Hint: it's a shopping list.
+
+### To run:
+
+* `yarn`
+* `yarn build`
+* `trunk serve`
+
