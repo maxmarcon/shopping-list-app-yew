@@ -1,28 +1,35 @@
 use yew::prelude::*;
 
-mod entry;
+mod listitem;
 
-use crate::entry::Entry;
+use crate::listitem::ListItem;
 
-struct Item(&'static str, bool);
+#[derive(PartialEq)]
+pub struct Item {
+    name: &'static str,
+    checked: bool
+}
 
 #[function_component]
 fn App() -> Html {
+   
     let entries: Vec<Html> = [
-        Item("Cereals", false),
-        Item("Milk", true),
-        Item("Jam", true),
-        Item("Butter", false),
-        Item("Apples", false),
+        Item {name:"Cereals", checked: false},
+        Item {name:"Milk", checked: true},
+        Item {name:"Jam", checked: true},
+        Item {name:"Butter", checked: false},
+        Item {name:"Apples", checked: false},
     ]
     .into_iter()
-    .map(|Item(name, checked)| html! { <Entry name={name} checked={checked} />})
+    .map(|i| html! { <ListItem item={i} />})
     .collect();
 
     html! {
-        <ul>
-            { entries }
-        </ul>
+        <div class="flex justify-center my-2">
+            <ul class="list-none w-full md:w-1/2 w-full flex flex-col gap-2">
+                { entries }
+            </ul>
+        </div>
     }
 }
 
