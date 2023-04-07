@@ -1,34 +1,58 @@
+mod components;
+
+use components::itemlist::ItemList as ItemListComponent;
 use yew::prelude::*;
 
-mod listitem;
-
-use crate::listitem::ListItem;
-
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct Item {
-    name: &'static str,
-    checked: bool
+    name: String,
+    checked: bool,
 }
 
 #[function_component]
 fn App() -> Html {
-   
-    let entries: Vec<Html> = [
-        Item {name:"Cereals", checked: false},
-        Item {name:"Milk", checked: true},
-        Item {name:"Jam", checked: true},
-        Item {name:"Butter", checked: false},
-        Item {name:"Apples", checked: false},
-    ]
-    .into_iter()
-    .map(|i| html! { <ListItem item={i} />})
-    .collect();
+    let items = use_state(|| {
+        vec![
+            Item {
+                name: "Cereals".into(),
+                checked: false,
+            },
+            Item {
+                name: "Milk".into(),
+                checked: true,
+            },
+            Item {
+                name: "Jam".into(),
+                checked: true,
+            },
+            Item {
+                name: "Butter".into(),
+                checked: false,
+            },
+            Item {
+                name: "Apples".into(),
+                checked: false,
+            },
+        ]
+    });
+
+    let item_clicked = {
+        let items = items.clone();
+        Callback::from(move |name: String| {
+            let mut updated_items = (*items).clone();
+            updated_items
+                .iter_mut()
+                .filter(|i| i.name == name)
+                .for_each(|i| i.checked = !i.checked);
+
+            updated_items.sort_by_key(|i| i.checked);
+            items.set(updated_items);
+        })
+    };
 
     html! {
         <div class="flex justify-center my-2">
-            <ul class="list-none w-full md:w-1/2 w-full flex flex-col gap-2">
-                { entries }
-            </ul>
+            <ItemListComponent items={(*items).clone()} {item_clicked} />
         </div>
     }
 }
