@@ -12,7 +12,7 @@ pub struct Item {
 #[function_component]
 fn App() -> Html {
     let items = use_state(|| {
-        vec![
+        let mut items = vec![
             Item {
                 name: "Cereals".into(),
                 checked: false,
@@ -33,7 +33,9 @@ fn App() -> Html {
                 name: "Apples".into(),
                 checked: false,
             },
-        ]
+        ];
+        items.sort_by_key(|i| i.checked);
+        items
     });
 
     let item_clicked = {
