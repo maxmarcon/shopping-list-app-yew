@@ -1,6 +1,6 @@
 ## Yew learning project
 
-Hint: it's a shopping list.
+Spoiler: it's a shopping list.
 
 ### To run:
 
