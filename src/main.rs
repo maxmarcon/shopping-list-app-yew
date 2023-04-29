@@ -25,7 +25,11 @@ fn add_item(
     let new_item = input.value().trim().to_owned();
     let mut updated_items = (*items).clone();
     if !new_item.is_empty() {
-        if items.iter().find(|&i| i.name == new_item).is_some() {
+        if items
+            .iter()
+            .find(|i| i.name.to_lowercase() == new_item.to_lowercase())
+            .is_some()
+        {
             error_msg.set(Some("item already exists"));
             return;
         }
@@ -38,6 +42,16 @@ fn add_item(
         items.set(updated_items);
         input.set_value("");
     }
+}
+
+fn clear_checked(items: UseStateHandle<Vec<Item>>) {
+    let updated_items = (*items)
+        .clone()
+        .into_iter()
+        .filter(|i| !i.checked)
+        .collect();
+
+    items.set(updated_items);
 }
 
 #[function_component]
@@ -80,6 +94,13 @@ fn App() -> Html {
         })
     };
 
+    let clear_checked = {
+        let items = items.clone();
+        Callback::from(move |_| {
+            clear_checked(items.clone());
+        })
+    };
+
     html! {
         <div class="flex flex-col">
             <div class="flex justify-center my-2">
@@ -95,6 +116,7 @@ fn App() -> Html {
                 </label>
                 </div>
                 <button type="button" class="btn" onclick={item_added}>{"Add"}</button>
+                <button type="button" class="btn" onclick={clear_checked}>{"Clear checked"}</button>
             </div>
         </div>
     }

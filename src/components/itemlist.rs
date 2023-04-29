@@ -41,8 +41,15 @@ fn Item(ItemProps { item, item_clicked }: &ItemProps) -> Html {
         })
     };
 
+    let base_item_classes = vec!["flex", "w-full", "justify-between", "rounded-md", "p-2"];
+    let item_color = if item.checked {
+        vec!["bg-base-300", "text-base-content", "line-through"]
+    } else {
+        vec!["bg-info", "text-info-content"]
+    };
+
     html! {
-        <li key={item.name.clone()} {onclick} class="flex w-full justify-between bg-info text-info-content rounded-md p-2">
+        <li key={item.name.clone()} {onclick} class={classes!(base_item_classes, item_color)}>
         <span class="text-lg">{ item.name.clone() }</span>
         <input type="checkbox" checked={item.checked} class="checkbox" />
         </li>
