@@ -115,7 +115,7 @@ fn App() -> Html {
         })
     };
 
-    let any_checked = use_memo(|items| items.iter().any(|i| i.checked), (*items).clone());
+    let any_checked = use_memo(|items| items.iter().any(|i| i.checked), items.clone());
 
     html! {
         <div class="flex flex-col p-2 gap-2 items-center">
