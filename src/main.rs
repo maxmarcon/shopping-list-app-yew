@@ -118,18 +118,18 @@ fn App() -> Html {
     let any_checked = use_memo(|items| items.iter().any(|i| i.checked), (*items).clone());
 
     html! {
-        <div class="flex flex-col">
-            <div class="flex justify-center my-2">
+        <div class="flex flex-col p-2 gap-2 items-center">
+            <div class="my-2 w-full md:w-1/2">
                 <ItemList items={(*items).clone()} {item_click} {item_delete} />
             </div>
-            <div class="flex justify-center gap-1">
+            <div class="flex flex-wrap justify-center gap-1">
                 <div class="form-control">
-                <input type="text" class="input input-bordered" {onkeydown} ref={input_ref} />
-                <label class="label">
-                    <span class="label-text-alt text-error">
-                    {*error_msg}
-                    </span>
-                </label>
+                    <input type="text" class="input input-bordered" {onkeydown} ref={input_ref} />
+                    <label class="label">
+                        <span class="label-text-alt text-error">
+                        {*error_msg}
+                        </span>
+                    </label>
                 </div>
                 <button type="button" class="btn" onclick={item_added}>{"Add"}</button>
                 <button type="button" class="btn" onclick={clear_checked} disabled={!*any_checked}>{"Delete checked"}</button>

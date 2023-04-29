@@ -23,7 +23,7 @@ pub fn ItemList(
         .collect();
 
     html! {
-      <ul class="list-none w-full md:w-1/2 w-full flex flex-col gap-2">
+      <ul class="list-none flex flex-col gap-2">
         { list_items }
       </ul>
     }
