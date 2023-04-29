@@ -71,7 +71,7 @@ fn App() -> Html {
         })
     };
 
-    let item_clicked = {
+    let item_click = {
         let items = items.clone();
         Callback::from(move |name: String| {
             let mut updated_items = (*items).clone();
@@ -79,6 +79,20 @@ fn App() -> Html {
                 .iter_mut()
                 .filter(|i| i.name == name)
                 .for_each(|i| i.checked = !i.checked);
+
+            sort_items(&mut updated_items);
+            items.set(updated_items);
+        })
+    };
+
+    let item_delete = {
+        let items = items.clone();
+        Callback::from(move |name: String| {
+            let mut updated_items = (*items)
+                .clone()
+                .into_iter()
+                .filter(|i| i.name != name)
+                .collect();
 
             sort_items(&mut updated_items);
             items.set(updated_items);
@@ -101,10 +115,12 @@ fn App() -> Html {
         })
     };
 
+    let any_checked = use_memo(|items| items.iter().any(|i| i.checked), (*items).clone());
+
     html! {
         <div class="flex flex-col">
             <div class="flex justify-center my-2">
-                <ItemList items={(*items).clone()} {item_clicked} />
+                <ItemList items={(*items).clone()} {item_click} {item_delete} />
             </div>
             <div class="flex justify-center gap-1">
                 <div class="form-control">
@@ -116,7 +132,7 @@ fn App() -> Html {
                 </label>
                 </div>
                 <button type="button" class="btn" onclick={item_added}>{"Add"}</button>
-                <button type="button" class="btn" onclick={clear_checked}>{"Clear checked"}</button>
+                <button type="button" class="btn" onclick={clear_checked} disabled={!*any_checked}>{"Delete checked"}</button>
             </div>
         </div>
     }

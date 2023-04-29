@@ -1,21 +1,25 @@
 use yew::prelude::*;
 
+use super::icons::Trash;
+
 #[derive(Properties, PartialEq)]
 pub struct Props {
     pub items: Vec<crate::Item>,
-    pub item_clicked: Callback<String>,
+    pub item_click: Callback<String>,
+    pub item_delete: Callback<String>,
 }
 
 #[function_component]
 pub fn ItemList(
     Props {
         items,
-        item_clicked,
+        item_click,
+        item_delete,
     }: &Props,
 ) -> Html {
     let list_items: Vec<Html> = items
         .iter()
-        .map(|i| html! { <Item item={i.clone()} item_clicked={item_clicked} /> })
+        .map(|i| html! { <Item item={i.clone()} {item_click} {item_delete} /> })
         .collect();
 
     html! {
@@ -28,16 +32,31 @@ pub fn ItemList(
 #[derive(Properties, PartialEq)]
 struct ItemProps {
     item: crate::Item,
-    item_clicked: Callback<String>,
+    item_click: Callback<String>,
+    item_delete: Callback<String>,
 }
 
 #[function_component]
-fn Item(ItemProps { item, item_clicked }: &ItemProps) -> Html {
+fn Item(
+    ItemProps {
+        item,
+        item_click,
+        item_delete,
+    }: &ItemProps,
+) -> Html {
     let onclick = {
         let item = item.clone();
-        let item_clicked = item_clicked.clone();
+        let item_click = item_click.clone();
         Callback::from(move |_| {
-            item_clicked.emit(item.name.clone());
+            item_click.emit(item.name.clone());
+        })
+    };
+
+    let item_delete = {
+        let item = item.clone();
+        let item_delete = item_delete.clone();
+        Callback::from(move |_| {
+            item_delete.emit(item.name.clone());
         })
     };
 
@@ -48,10 +67,14 @@ fn Item(ItemProps { item, item_clicked }: &ItemProps) -> Html {
         vec!["bg-info", "text-info-content"]
     };
 
+    let button_color = if item.checked { None } else { Some("btn-info") };
+
     html! {
-        <li key={item.name.clone()} {onclick} class={classes!(base_item_classes, item_color)}>
-        <span class="text-lg">{ item.name.clone() }</span>
-        <input type="checkbox" checked={item.checked} class="checkbox" />
+        <li key={item.name.clone()} class={classes!(base_item_classes, item_color)}>
+            <div {onclick} class="flex w-full">
+                <span class="text-lg">{ item.name.clone() }</span>
+            </div>
+            <button class={classes!("btn", "btn-xs", button_color)} onclick={item_delete}><Trash /></button>
         </li>
     }
 }
