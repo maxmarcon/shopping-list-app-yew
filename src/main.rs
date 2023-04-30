@@ -1,10 +1,13 @@
 mod components;
 
 use components::itemlist::ItemList;
-use web_sys::HtmlInputElement;
+use serde::{Deserialize, Serialize};
+use web_sys::{window, HtmlInputElement, Storage};
 use yew::prelude::*;
 
-#[derive(Clone, PartialEq)]
+const ITEMS_KEY: &str = "items";
+
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct Item {
     name: String,
     checked: bool,
@@ -39,6 +42,7 @@ fn add_item(
         checked: false,
     });
     sort_items(&mut updated_items);
+    save_items(&updated_items);
     items.set(updated_items);
     html_input.set_value("");
 }
@@ -50,15 +54,50 @@ fn clear_checked(items: UseStateHandle<Vec<Item>>) {
         .filter(|i| !i.checked)
         .collect();
 
+    save_items(&updated_items);
     items.set(updated_items);
+}
+
+fn save_items(items: &Vec<Item>) {
+    if let Some(storage) = storage() {
+        storage
+            .set_item(ITEMS_KEY, &serde_json::to_string(&items).unwrap())
+            .unwrap();
+    }
+}
+
+fn load_items() -> Option<Vec<Item>> {
+    if let Some(storage) = storage() {
+        if let Some(json) = storage.get_item(ITEMS_KEY).unwrap() {
+            return serde_json::from_str(&json).map_or_else(
+                |e| {
+                    log::error!("could not parse JSON: {:?}", e);
+                    None
+                },
+                |items: Vec<Item>| Some(items),
+            );
+        }
+        return None;
+    }
+    None
+}
+
+fn storage() -> Option<Storage> {
+    match window() {
+        Some(window) => window.local_storage().unwrap_or_else(|e| {
+            log::error!("could not retrieve local storage: {:?}", e);
+            None
+        }),
+        None => None,
+    }
 }
 
 #[function_component]
 fn App() -> Html {
     let error_msg = use_state_eq(|| None);
-    let items = use_state_eq(|| Vec::<Item>::new());
+    let items = use_state_eq(|| load_items().unwrap_or(Vec::new()));
     let input_ref = use_node_ref();
-    let input_text = use_state(|| None::<String>);
+    let input_text = use_state_eq(|| None::<String>);
 
     let oninput = {
         let input_ref = input_ref.clone();
@@ -83,6 +122,7 @@ fn App() -> Html {
                 .for_each(|i| i.checked = !i.checked);
 
             sort_items(&mut updated_items);
+            save_items(&updated_items);
             items.set(updated_items);
         })
     };
@@ -97,6 +137,7 @@ fn App() -> Html {
                 .collect();
 
             sort_items(&mut updated_items);
+            save_items(&updated_items);
             items.set(updated_items);
         })
     };
