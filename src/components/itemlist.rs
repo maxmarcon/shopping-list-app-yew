@@ -23,9 +23,13 @@ pub fn ItemList(
         .collect();
 
     html! {
-      <ul class="list-none flex flex-col gap-2">
+        if list_items.is_empty() {
+        <p class="text-center italic font-medium">{"No items"}</p>  
+        } else {
+        <ul class="list-none flex flex-col gap-2">
         { list_items }
-      </ul>
+        </ul>
+        } 
     }
 }
 
@@ -60,7 +64,7 @@ fn Item(
         })
     };
 
-    let base_item_classes = vec!["flex", "w-full", "justify-between", "rounded-md", "p-2"];
+    let base_item_classes = vec!["flex", "justify-between", "rounded-md", "p-2"];
     let item_color = if item.checked {
         vec!["bg-base-300", "text-base-content", "line-through"]
     } else {
