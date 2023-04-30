@@ -24,12 +24,12 @@ pub fn ItemList(
 
     html! {
         if list_items.is_empty() {
-        <p class="text-center italic font-medium">{"No items"}</p>  
+        <p class="text-center italic font-medium">{"No items"}</p>
         } else {
         <ul class="list-none flex flex-col gap-2">
         { list_items }
         </ul>
-        } 
+        }
     }
 }
 

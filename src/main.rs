@@ -70,7 +70,7 @@ fn App() -> Html {
             }
         })
     };
-    
+
     let oninput = {
         let input_ref = input_ref.clone();
         let input_text = input_text.clone();
@@ -78,11 +78,10 @@ fn App() -> Html {
             let input_ref = input_ref.cast::<HtmlInputElement>().unwrap();
             input_text.set(match input_ref.value() {
                 value if value.is_empty() => None,
-                value => Some(value)
+                value => Some(value),
             });
         })
     };
-    
 
     let item_click = {
         let items = items.clone();
