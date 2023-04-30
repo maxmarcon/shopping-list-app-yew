@@ -1,7 +1,8 @@
 mod components;
 
 use components::itemlist::ItemList;
-use web_sys::{HtmlInputElement, KeyboardEvent};
+use wasm_bindgen::JsValue;
+use web_sys::{console, HtmlInputElement};
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq)]
@@ -18,27 +19,29 @@ fn sort_items(items: &mut Vec<Item>) {
 fn add_item(
     items: UseStateHandle<Vec<Item>>,
     error_msg: UseStateHandle<Option<&str>>,
-    input_text: UseStateHandle<Option<String>>,
+    input_ref: NodeRef,
 ) {
-    if let Some(new_item_text) = &*input_text {
-        if items
-            .iter()
-            .find(|i| i.name.to_lowercase() == new_item_text.to_lowercase())
-            .is_some()
-        {
-            error_msg.set(Some("item already exists"));
-            return;
-        }
-        error_msg.set(None);
-        let mut updated_items = (*items).clone();
-        updated_items.push(Item {
-            name: new_item_text.into(),
-            checked: false,
-        });
-        sort_items(&mut updated_items);
-        items.set(updated_items);
-        input_text.set(None);
+    let html_input = input_ref.cast::<HtmlInputElement>().unwrap();
+    if html_input.value().is_empty() {
+        return;
     }
+    if items
+        .iter()
+        .find(|i| i.name.to_lowercase() == html_input.value().to_lowercase())
+        .is_some()
+    {
+        error_msg.set(Some("item already exists"));
+        return;
+    }
+    error_msg.set(None);
+    let mut updated_items = (*items).clone();
+    updated_items.push(Item {
+        name: html_input.value().into(),
+        checked: false,
+    });
+    sort_items(&mut updated_items);
+    items.set(updated_items);
+    html_input.set_value("");
 }
 
 fn clear_checked(items: UseStateHandle<Vec<Item>>) {
@@ -58,24 +61,12 @@ fn App() -> Html {
     let input_ref = use_node_ref();
     let input_text = use_state(|| None::<String>);
 
-    let onkeydown = {
-        let items = items.clone();
-        let error_msg = error_msg.clone();
-        let input_ref = input_ref.clone();
-        let input_text = input_text.clone();
-        Callback::from(move |k: KeyboardEvent| {
-            if k.key_code() == 13 {
-                add_item(items.clone(), error_msg.clone(), input_text.clone());
-                input_ref.cast::<HtmlInputElement>().unwrap().set_value("");
-            }
-        })
-    };
-
     let oninput = {
         let input_ref = input_ref.clone();
         let input_text = input_text.clone();
         Callback::from(move |_| {
             let input_ref = input_ref.cast::<HtmlInputElement>().unwrap();
+            console::log_1(&JsValue::from(format!("input = {}", input_ref.value())));
             input_text.set(match input_ref.value() {
                 value if value.is_empty() => None,
                 value => Some(value),
@@ -111,14 +102,14 @@ fn App() -> Html {
         })
     };
 
-    let item_added = {
+    let onsubmit = {
         let items = items.clone();
         let error_msg = error_msg.clone();
         let input_ref = input_ref.clone();
         let input_text = input_text.clone();
         Callback::from(move |_| {
-            add_item(items.clone(), error_msg.clone(), input_text.clone());
-            input_ref.cast::<HtmlInputElement>().unwrap().set_value("");
+            add_item(items.clone(), error_msg.clone(), input_ref.clone());
+            input_text.set(None);
         })
     };
 
@@ -136,18 +127,20 @@ fn App() -> Html {
             <div class="my-2 w-full md:w-1/2">
                 <ItemList items={(*items).clone()} {item_click} {item_delete} />
             </div>
-            <div class="flex flex-wrap justify-center gap-1">
-                <div class="form-control">
-                    <input type="text" class="input input-bordered" placeholder="Enter an item" {onkeydown} {oninput} ref={input_ref} />
-                    <label class="label">
-                        <span class="label-text-alt text-error">
-                        {*error_msg}
-                        </span>
-                    </label>
-                </div>
-                <button type="button" class="btn" onclick={item_added} disabled={input_text.is_none()}>{"Add"}</button>
-                <button type="button" class="btn" onclick={clear_checked} disabled={!*any_checked}>{"Delete checked"}</button>
-            </div>
+                <form {onsubmit} action="#">
+                    <div class="flex flex-wrap justify-center gap-1">
+                            <div class="form-control">
+                                <input type="text" class="input input-bordered" placeholder="Enter an item" {oninput} ref={input_ref} />
+                                <label class="label">
+                                    <span class="label-text-alt text-error">
+                                    {*error_msg}
+                                    </span>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn" disabled={input_text.is_none()}>{"Add"}</button>
+                            <button type="button" class="btn" onclick={clear_checked} disabled={!*any_checked}>{"Delete checked"}</button>
+                    </div>
+                </form>
         </div>
     }
 }
