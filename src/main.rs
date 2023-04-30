@@ -1,8 +1,7 @@
 mod components;
 
 use components::itemlist::ItemList;
-use wasm_bindgen::JsValue;
-use web_sys::{console, HtmlInputElement};
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq)]
@@ -66,7 +65,7 @@ fn App() -> Html {
         let input_text = input_text.clone();
         Callback::from(move |_| {
             let input_ref = input_ref.cast::<HtmlInputElement>().unwrap();
-            console::log_1(&JsValue::from(format!("input = {}", input_ref.value())));
+            log::debug!("input = {}", input_ref.value());
             input_text.set(match input_ref.value() {
                 value if value.is_empty() => None,
                 value => Some(value),
@@ -146,5 +145,6 @@ fn App() -> Html {
 }
 
 fn main() {
+    wasm_logger::init(wasm_logger::Config::new(log::Level::Info));
     yew::Renderer::<App>::new().render();
 }
