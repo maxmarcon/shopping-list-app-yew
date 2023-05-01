@@ -64,7 +64,7 @@ fn Item(
         })
     };
 
-    let base_item_classes = vec!["flex", "justify-between", "rounded-md", "p-2"];
+    let base_item_classes = vec!["flex", "gap-1", "rounded-md", "p-2"];
     let item_color = if item.checked {
         vec!["bg-base-300", "text-base-content", "line-through"]
     } else {
@@ -75,8 +75,11 @@ fn Item(
 
     html! {
         <li key={item.name.clone()} class={classes!(base_item_classes, item_color)}>
-            <div {onclick} class="flex w-full">
+            <div {onclick} class="flex w-full justify-between">
                 <span class="text-lg">{ item.name.clone() }</span>
+                if item.checked {
+                    <input type="checkbox" checked={true} class="checkbox" />
+                }
             </div>
             <button class={classes!("btn", "btn-xs", button_color)} onclick={item_delete}><Trash /></button>
         </li>

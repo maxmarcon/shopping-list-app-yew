@@ -1,0 +1,13 @@
+{
+  "name": "Shopping List",
+  "short_name": "WSL",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any"
+    }
+  ]
+}
