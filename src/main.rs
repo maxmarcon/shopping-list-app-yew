@@ -147,7 +147,8 @@ fn App() -> Html {
         let error_msg = error_msg.clone();
         let input_ref = input_ref.clone();
         let input_text = input_text.clone();
-        Callback::from(move |_| {
+        Callback::from(move |event: SubmitEvent| {
+            event.prevent_default();
             add_item(items.clone(), error_msg.clone(), input_ref.clone());
             input_text.set(None);
         })
@@ -167,7 +168,7 @@ fn App() -> Html {
             <div class="my-2 w-full md:w-1/2">
                 <ItemList items={(*items).clone()} {item_click} {item_delete} />
             </div>
-                <form {onsubmit} action="#">
+                <form {onsubmit}>
                     <div class="flex flex-wrap justify-center gap-1">
                             <div class="form-control">
                                 <input type="text" class="input input-bordered" placeholder="Enter an item" {oninput} ref={input_ref} />
