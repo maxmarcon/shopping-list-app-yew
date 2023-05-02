@@ -6,7 +6,7 @@ Spoiler: it's a shopping list.
 
 You can try it [here](https://wasm-shopping-list.netlify.app/).
 
-The app even can be installed as PWA
+The app can also be installed as a PWA (Progressive Web App).
 
 ### To run:
 
