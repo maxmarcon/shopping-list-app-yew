@@ -97,18 +97,15 @@ fn App() -> Html {
     let error_msg = use_state_eq(|| None);
     let items = use_state_eq(|| load_items().unwrap_or(Vec::new()));
     let input_ref = use_node_ref();
-    let input_text = use_state_eq(|| None::<String>);
+    let can_submit = use_state_eq(|| false);
 
     let oninput = {
         let input_ref = input_ref.clone();
-        let input_text = input_text.clone();
+        let can_submit = can_submit.clone();
         Callback::from(move |_| {
             let input_ref = input_ref.cast::<HtmlInputElement>().unwrap();
             log::debug!("input = {}", input_ref.value());
-            input_text.set(match input_ref.value() {
-                value if value.is_empty() => None,
-                value => Some(value),
-            });
+            can_submit.set(!input_ref.value().trim().is_empty());
         })
     };
 
@@ -146,11 +143,11 @@ fn App() -> Html {
         let items = items.clone();
         let error_msg = error_msg.clone();
         let input_ref = input_ref.clone();
-        let input_text = input_text.clone();
+        let can_submit = can_submit.clone();
         Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
             add_item(items.clone(), error_msg.clone(), input_ref.clone());
-            input_text.set(None);
+            can_submit.set(false);
         })
     };
 
@@ -178,7 +175,7 @@ fn App() -> Html {
                                     </span>
                                 </label>
                             </div>
-                            <button type="submit" class="btn" disabled={input_text.is_none()}>{"Add"}</button>
+                            <button type="submit" class="btn" disabled={!*can_submit}>{"Add"}</button>
                             <button type="button" class="btn" onclick={clear_checked} disabled={!*any_checked}>{"Delete checked"}</button>
                     </div>
                 </form>
