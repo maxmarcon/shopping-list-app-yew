@@ -39,7 +39,7 @@ fn add_item(
     error_msg.set(None);
     let mut updated_items = (*items).clone();
     updated_items.push(Item {
-        name: input_text.into(),
+        name: input_text,
         checked: false,
     });
     sort_items(&mut updated_items);
