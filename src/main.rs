@@ -24,12 +24,13 @@ fn add_item(
     input_ref: NodeRef,
 ) {
     let html_input = input_ref.cast::<HtmlInputElement>().unwrap();
-    if html_input.value().is_empty() {
+    let input_text = html_input.value().trim().to_owned();
+    if input_text.is_empty() {
         return;
     }
     if items
         .iter()
-        .find(|i| i.name.to_lowercase() == html_input.value().to_lowercase())
+        .find(|i| i.name.to_lowercase() == input_text.to_lowercase())
         .is_some()
     {
         error_msg.set(Some("item already exists"));
@@ -38,7 +39,7 @@ fn add_item(
     error_msg.set(None);
     let mut updated_items = (*items).clone();
     updated_items.push(Item {
-        name: html_input.value().into(),
+        name: input_text.into(),
         checked: false,
     });
     sort_items(&mut updated_items);
