@@ -1,6 +1,4 @@
-## Yew learning project
-
-Spoiler: it's a shopping list.
+## Shopping list app
 
 ![screenshot](screenshot.png)
 
